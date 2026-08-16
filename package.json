@@ -1,0 +1,29 @@
+{
+  "name": "vesperaero-monorepo",
+  "version": "1.0.0",
+  "description": "VesperAero — Federated Climate-Action Platform for Hyper-local & Cross-border Pollution Monitoring",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:capture": "cd apps/capture-client && npm run dev",
+    "dev:dashboard": "cd apps/gov-dashboard && npm run dev",
+    "dev": "concurrently -n \"SERVER,CAPTURE,DASHBOARD\" -c \"blue,green,magenta\" \"npm run dev:server\" \"npm run dev:capture\" \"npm run dev:dashboard\"",
+    "build:capture": "cd apps/capture-client && npm run build",
+    "build:dashboard": "cd apps/gov-dashboard && npm run build",
+    "build": "npm run build:capture && npm run build:dashboard",
+    "install:all": "npm install && cd server && npm install && cd ../apps/capture-client && npm install && cd ../gov-dashboard && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "brics",
+    "climate-action",
+    "gemini-vision",
+    "pollution-monitoring",
+    "gaussian-plume",
+    "nasa-firms",
+    "sustainability"
+  ],
+  "author": "Arun & Co",
+  "license": "MIT"
+}

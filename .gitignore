@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+*/node_modules/
+apps/*/node_modules/
+server/node_modules/
+
+# Environment Variables & Secrets
+.env
+server/.env
+*.env
+*.env.local
+
+# Production Builds
+dist/
+apps/*/dist/
+build/
+
+# Persistent data store (runtime storage)
+# Keep directory structure but ignore runtime modifications
+data/reports-store.json
+
+# System & IDE files
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
+.idea/
