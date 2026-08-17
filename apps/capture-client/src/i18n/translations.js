@@ -25,7 +25,9 @@ export const translations = {
     plumeDrift: "Plume Drift Vector",
     dispatchAdvice: "Actionable Dispatch Recommendation",
     switchRegion: "Switch Region",
-    viewDashboard: "Open Gov Command Center"
+    viewDashboard: "Open Gov Command Center",
+    historyTitle: "History",
+    historyBadge: "My Submissions"
   },
   hi: {
     title: "वेस्परएयरो",
@@ -53,7 +55,9 @@ export const translations = {
     plumeDrift: "धुएं के फैलाव की दिशा",
     dispatchAdvice: "कार्यवाही की सिफारिश",
     switchRegion: "क्षेत्र बदलें",
-    viewDashboard: "डैशबोर्ड खोलें"
+    viewDashboard: "डैशबोर्ड खोलें",
+    historyTitle: "इतिहास",
+    historyBadge: "मेरी प्रस्तुतियाँ"
   },
   pt: {
     title: "VesperAero",
@@ -81,7 +85,9 @@ export const translations = {
     plumeDrift: "Vetor de Dispersão da Pluma",
     dispatchAdvice: "Recomendação de Despacho",
     switchRegion: "Mudar Região",
-    viewDashboard: "Abrir Painel de Comando"
+    viewDashboard: "Abrir Painel de Comando",
+    historyTitle: "Histórico",
+    historyBadge: "Meus Registros"
   },
   ru: {
     title: "VesperAero",
@@ -109,7 +115,9 @@ export const translations = {
     plumeDrift: "Вектор рассеивания шлейфа",
     dispatchAdvice: "Рекомендация для инспекции",
     switchRegion: "Выбрать регион",
-    viewDashboard: "Командный центр"
+    viewDashboard: "Командный центр",
+    historyTitle: "История",
+    historyBadge: "Мои отчеты"
   },
   zh: {
     title: "VesperAero 极风天眼",
@@ -137,6 +145,8 @@ export const translations = {
     plumeDrift: "烟羽跨界扩散向量",
     dispatchAdvice: "执法调度建议",
     switchRegion: "切换区域",
-    viewDashboard: "打开治理指挥中心"
+    viewDashboard: "打开治理指挥中心",
+    historyTitle: "历史记录",
+    historyBadge: "我的上报"
   }
 };

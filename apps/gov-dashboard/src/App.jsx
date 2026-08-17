@@ -15,7 +15,8 @@ export default function App() {
   const [currentRegion, setCurrentRegion] = useState(BRICS_REGIONS[0]); // Punjab default
   const [reports, setReports] = useState([]);
   const [hotspots, setHotspots] = useState([]);
-  const [stats, setStats] = useState({ totalReports: 0, activeHazards: 0, crossBorderIncidents: 0, dispatchedCount: 0 });
+  const [stats, setStats] = useState({ totalReports: 0, activeHazards: 0, crossBorderIncidents: 0, dispatchedCount: 0, topPollutants: [] });
+  const [auditLogs, setAuditLogs] = useState([]);
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [modalIncident, setModalIncident] = useState(null);
   const [dispatchIncident, setDispatchIncident] = useState(null);
@@ -55,6 +56,19 @@ export default function App() {
     }
   }, []);
 
+  // Fetch inter-agency dispatch audit logs
+  const fetchAuditLogs = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/reports/audit-logs`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) setAuditLogs(json.data);
+      }
+    } catch (e) {
+      console.warn('Audit logs fetch error:', e);
+    }
+  }, []);
+
   // Fetch FIRMS satellite hotspots for active region
   const fetchHotspots = useCallback(async (region = currentRegion) => {
     try {
@@ -79,6 +93,7 @@ export default function App() {
   useEffect(() => {
     fetchReports();
     fetchStats();
+    fetchAuditLogs();
 
     // Setup SSE listener for real-time live events
     let eventSource;
@@ -90,11 +105,13 @@ export default function App() {
           if (data.event === 'new_report' && data.report) {
             setReports((prev) => [data.report, ...prev.filter((r) => r.id !== data.report.id)]);
             fetchStats();
+            fetchAuditLogs();
           } else if (data.event === 'status_update' && data.report) {
             setReports((prev) =>
               prev.map((r) => (r.id === data.report.id ? { ...r, status: data.report.status } : r))
             );
             fetchStats();
+            fetchAuditLogs();
           }
         } catch (err) {
           console.warn('SSE message parse error:', err);
@@ -107,13 +124,14 @@ export default function App() {
     const interval = setInterval(() => {
       fetchReports();
       fetchStats();
+      fetchAuditLogs();
     }, 15000);
 
     return () => {
       clearInterval(interval);
       if (eventSource) eventSource.close();
     };
-  }, [fetchReports, fetchStats]);
+  }, [fetchReports, fetchStats, fetchAuditLogs]);
 
   // Handle region switch
   const handleSelectRegion = (region) => {
@@ -131,13 +149,14 @@ export default function App() {
       const res = await fetch(`${API_BASE}/api/reports/${report.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'dispatched' })
+        body: JSON.stringify({ status: 'dispatched', targetAgency: 'ALL_RELEVANT' })
       });
       if (res.ok) {
         setReports((prev) =>
           prev.map((r) => (r.id === report.id ? { ...r, status: 'dispatched' } : r))
         );
         fetchStats();
+        fetchAuditLogs();
         setActionToast({
           type: 'dispatch',
           title: '⚡ Inter-Agency Alert Dispatched',
@@ -156,18 +175,19 @@ export default function App() {
   };
 
   // Handle Dispatch confirmation from modal
-  const handleConfirmDispatch = async (reportId) => {
+  const handleConfirmDispatch = async (reportId, targetAgency = 'ALL_RELEVANT') => {
     try {
       const res = await fetch(`${API_BASE}/api/reports/${reportId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'dispatched' })
+        body: JSON.stringify({ status: 'dispatched', targetAgency })
       });
       if (res.ok) {
         setReports((prev) =>
           prev.map((r) => (r.id === reportId ? { ...r, status: 'dispatched' } : r))
         );
         fetchStats();
+        fetchAuditLogs();
         const found = reports.find(r => r.id === reportId);
         setActionToast({
           type: 'dispatch',
@@ -257,6 +277,7 @@ export default function App() {
         <AnalyticsPanel
           stats={stats}
           reports={reports}
+          auditLogs={auditLogs}
           isOpen={isAnalyticsOpen}
           setIsOpen={setIsAnalyticsOpen}
           t={t}

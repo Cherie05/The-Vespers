@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Leaf, Send, ExternalLink, Sparkles } from 'lucide-react';
+import { Leaf, Send, ExternalLink, Sparkles, History } from 'lucide-react';
 import { translations } from './i18n/translations';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import GeoLocationBadge from './components/GeoLocationBadge';
 import CameraCapture from './components/CameraCapture';
 import VoiceRecorder from './components/VoiceRecorder';
 import SubmissionStatus from './components/SubmissionStatus';
+import UserHistoryDrawer from './components/UserHistoryDrawer';
+import { saveReport, getReports, getDeviceUUID } from './lib/historyStorage';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -29,8 +31,15 @@ export default function App() {
   const [submitStatus, setSubmitStatus] = useState('idle'); // idle | loading | success | error
   const [errorMessage, setErrorMessage] = useState('');
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [historyCount, setHistoryCount] = useState(0);
 
   const t = translations[lang] || translations.en;
+
+  // Initialize history count from local storage
+  useEffect(() => {
+    setHistoryCount(getReports().length);
+  }, []);
 
   // Fetch live weather when coordinates change
   useEffect(() => {
@@ -60,13 +69,15 @@ export default function App() {
     setAnalysisResult(null);
 
     try {
+      const deviceId = getDeviceUUID();
       const payload = {
         image,
         lat: location.lat,
         lng: location.lng,
         note,
         voiceNote,
-        reporter: 'Citizen Sensor Network'
+        reporter: 'Citizen Sensor Network',
+        deviceId
       };
 
       const res = await fetch(`${API_BASE}/api/reports/pollution`, {
@@ -79,6 +90,9 @@ export default function App() {
       if (res.ok && json.success) {
         setAnalysisResult(json.data);
         setSubmitStatus('success');
+        // Save forensic report receipt to browser storage immediately
+        saveReport(json.data);
+        setHistoryCount(getReports().length);
       } else {
         throw new Error(json.error || 'Failed to submit report to Gemini AI engine.');
       }
@@ -102,7 +116,47 @@ export default function App() {
           </div>
         </div>
 
-        <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* My Submissions History Trigger */}
+          <button
+            onClick={() => setIsHistoryOpen(true)}
+            style={{
+              background: 'rgba(15, 23, 42, 0.8)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-main)',
+              padding: '6px 10px',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              cursor: 'pointer',
+              transition: 'border-color 0.2s, background 0.2s'
+            }}
+            title="Review My Past Submissions"
+          >
+            <History size={15} color="var(--accent-cyan)" />
+            <span>{t.historyTitle || 'History'}</span>
+            {historyCount > 0 && (
+              <span
+                className="mono"
+                style={{
+                  background: 'rgba(56, 189, 248, 0.2)',
+                  color: 'var(--accent-cyan)',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  padding: '1px 6px',
+                  borderRadius: 10
+                }}
+              >
+                {historyCount}
+              </span>
+            )}
+          </button>
+
+          <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
+        </div>
       </header>
 
       <main style={{ flex: 1 }}>
@@ -153,6 +207,16 @@ export default function App() {
         {/* Forensic Analysis Result */}
         <SubmissionStatus status={submitStatus} result={analysisResult} errorMessage={errorMessage} t={t} />
       </main>
+
+      {/* Citizen Local History Drawer */}
+      <UserHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => {
+          setIsHistoryOpen(false);
+          setHistoryCount(getReports().length);
+        }}
+        apiBase={API_BASE}
+      />
 
       <footer className="gov-link-bar">
         <a

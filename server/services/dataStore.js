@@ -1,10 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 class DataStore {
   constructor() {
     this.storePath = path.join(__dirname, '../../data/reports-store.json');
     this.reports = [];
+    this.auditLogs = [];
     this.subscribers = new Set();
     this.init();
   }
@@ -13,16 +15,28 @@ class DataStore {
     try {
       if (fs.existsSync(this.storePath)) {
         const raw = fs.readFileSync(this.storePath, 'utf8');
-        this.reports = JSON.parse(raw);
-        console.log(`[DataStore] Loaded ${this.reports.length} verified reports from storage.`);
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          this.reports = parsed;
+          this.auditLogs = [];
+        } else if (parsed && typeof parsed === 'object') {
+          this.reports = parsed.reports || [];
+          this.auditLogs = parsed.auditLogs || [];
+        } else {
+          this.reports = [];
+          this.auditLogs = [];
+        }
+        console.log(`[DataStore] Loaded ${this.reports.length} reports and ${this.auditLogs.length} audit logs from storage.`);
       } else {
         this.reports = [];
+        this.auditLogs = [];
         this.saveToDisk();
-        console.log('[DataStore] Initialized clean empty reports store.');
+        console.log('[DataStore] Initialized clean empty reports and audit store.');
       }
     } catch (e) {
-      console.warn(`[DataStore] Warning loading reports: ${e.message}`);
+      console.warn(`[DataStore] Warning loading reports/audit-store: ${e.message}`);
       this.reports = [];
+      this.auditLogs = [];
     }
   }
 
@@ -30,7 +44,11 @@ class DataStore {
     try {
       const dir = path.dirname(this.storePath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(this.storePath, JSON.stringify(this.reports, null, 2), 'utf8');
+      const payload = {
+        reports: this.reports,
+        auditLogs: this.auditLogs
+      };
+      fs.writeFileSync(this.storePath, JSON.stringify(payload, null, 2), 'utf8');
     } catch (err) {
       console.error('[DataStore] Failed to write reports to disk:', err.message);
     }
@@ -58,6 +76,17 @@ class DataStore {
     return this.reports.find(r => r.id === id);
   }
 
+  getReportsByDeviceId(deviceId) {
+    if (!deviceId) return [];
+    return this.reports
+      .filter(r => r.deviceId === deviceId)
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }
+
+  getAuditLogs() {
+    return [...this.auditLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }
+
   createReport(reportData) {
     const newReport = {
       id: `rep_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
@@ -73,12 +102,46 @@ class DataStore {
     return newReport;
   }
 
-  updateReportStatus(id, status) {
+  updateReportStatus(id, status, metadata = {}) {
     const report = this.getReportById(id);
     if (!report) return null;
     report.status = status;
+
+    let auditRecord = null;
+    // When a dispatch or status change occurs, generate an immutable audit record with cryptographic authorization hash
+    if (status === 'dispatched' || metadata.createAudit) {
+      const targetAgency = metadata.targetAgency || 'ALL_RELEVANT';
+      const timestamp = new Date().toISOString();
+      const rawHashPayload = `${report.id}:${status}:${targetAgency}:${timestamp}:${report.lat},${report.lng}:VESPER-SECURE-AUDIT`;
+      const authHash = '0x' + crypto.createHash('sha256').update(rawHashPayload).digest('hex');
+
+      auditRecord = {
+        id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        timestamp,
+        reportId: report.id,
+        reportTitle: report.title,
+        action: 'DISPATCH_BROADCAST',
+        status,
+        targetAgency,
+        region: report.region,
+        country: report.country,
+        coordinates: { lat: report.lat, lng: report.lng },
+        classification: report.aiResult?.source_classification || 'Environmental Emission',
+        densityScore: report.aiResult?.visual_density_score || null,
+        hazard: !!report.aiResult?.immediate_health_hazard,
+        crossBorderRisk: !!report.aiResult?.plume_vector?.cross_border_risk,
+        authHash
+      };
+
+      this.auditLogs.unshift(auditRecord);
+    }
+
     this.saveToDisk();
-    this.notifySubscribers({ event: 'status_update', report });
+    this.notifySubscribers({
+      event: 'status_update',
+      report,
+      auditRecord
+    });
     return report;
   }
 

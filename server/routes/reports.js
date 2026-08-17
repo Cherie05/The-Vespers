@@ -42,6 +42,30 @@ router.get('/stream', (req, res) => {
   });
 });
 
+// GET /api/reports/history - Fetch citizen history by device UUID
+router.get('/history', (req, res) => {
+  try {
+    const { deviceId } = req.query;
+    if (!deviceId) {
+      return res.status(400).json({ success: false, error: 'deviceId query parameter is required' });
+    }
+    const history = dataStore.getReportsByDeviceId(deviceId);
+    res.json({ success: true, count: history.length, data: history });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// GET /api/reports/audit-logs - Fetch inter-agency dispatch audit trail
+router.get('/audit-logs', (req, res) => {
+  try {
+    const auditLogs = dataStore.getAuditLogs();
+    res.json({ success: true, count: auditLogs.length, data: auditLogs });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // GET /api/reports/:id - Fetch single report
 router.get('/:id', (req, res) => {
   try {
@@ -66,7 +90,8 @@ router.post('/pollution', async (req, res) => {
       voiceNote = '',
       region = 'Punjab Border Corridor',
       country = 'India',
-      reporter = 'Citizen Sensor'
+      reporter = 'Citizen Sensor',
+      deviceId
     } = req.body;
 
     if (!image) {
@@ -100,6 +125,7 @@ router.post('/pollution', async (req, res) => {
       aiResult,
       voiceNote: voiceNote || undefined,
       reporter: reporter || 'Citizen Mobile Sensor',
+      deviceId: deviceId || undefined,
       status: aiResult.immediate_health_hazard ? 'verified' : 'pending'
     };
 
@@ -119,12 +145,15 @@ router.post('/pollution', async (req, res) => {
 // PATCH /api/reports/:id/status - Update dispatch / verification status
 router.patch('/:id/status', (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, targetAgency, authorizedBy } = req.body;
     if (!['pending', 'verified', 'dispatched', 'resolved'].includes(status)) {
       return res.status(400).json({ success: false, error: 'Invalid status' });
     }
 
-    const updated = dataStore.updateReportStatus(req.params.id, status);
+    const updated = dataStore.updateReportStatus(req.params.id, status, {
+      targetAgency,
+      authorizedBy
+    });
     if (!updated) {
       return res.status(404).json({ success: false, error: 'Report not found' });
     }

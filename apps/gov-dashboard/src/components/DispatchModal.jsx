@@ -13,7 +13,7 @@ export default function DispatchModal({ incident, onClose, onConfirmDispatch, t 
   const handleSend = () => {
     setDispatchStatus('sending');
     setTimeout(() => {
-      onConfirmDispatch(incident.id);
+      onConfirmDispatch(incident.id, targetAgency);
       setDispatchStatus('sent');
       setTimeout(() => {
         onClose();
