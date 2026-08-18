@@ -5,6 +5,8 @@ export default function IncidentModal({
   incident,
   onClose,
   onOpenDispatch,
+  onOpenDossier,
+  onBroadcastAdvisory,
   t
 }) {
   if (!incident) return null;
@@ -183,18 +185,64 @@ export default function IncidentModal({
         </div>
 
         {/* Footer Actions */}
-        <div style={{ padding: '14px 22px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(9, 13, 22, 0.8)' }}>
+        <div style={{ padding: '14px 22px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(9, 13, 22, 0.8)', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
             Source: {incident.reporter || 'Citizen Sensor'} · Engine: {ai.ai_model || 'Google Gemini Vision'}
           </span>
 
-          <button
-            className="btn-dispatch"
-            onClick={() => onOpenDispatch(incident)}
-          >
-            <Send size={16} />
-            <span>{t.dispatchAlert}</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {onOpenDossier && (
+              <button
+                onClick={() => onOpenDossier(incident)}
+                style={{
+                  background: 'rgba(56, 189, 248, 0.15)',
+                  border: '1px solid rgba(56, 189, 248, 0.35)',
+                  color: '#38bdf8',
+                  padding: '8px 14px',
+                  borderRadius: 6,
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+              >
+                <FileText size={15} />
+                <span>Legal Dossier (PDF)</span>
+              </button>
+            )}
+
+            {onBroadcastAdvisory && (
+              <button
+                onClick={() => onBroadcastAdvisory(incident)}
+                style={{
+                  background: 'rgba(245, 158, 11, 0.18)',
+                  border: '1px solid rgba(245, 158, 11, 0.4)',
+                  color: '#fcd34d',
+                  padding: '8px 14px',
+                  borderRadius: 6,
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+              >
+                <Activity size={15} />
+                <span>📢 Health Advisory</span>
+              </button>
+            )}
+
+            <button
+              className="btn-dispatch"
+              onClick={() => onOpenDispatch(incident)}
+            >
+              <Send size={16} />
+              <span>{t.dispatchAlert}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

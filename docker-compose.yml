@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # VesperAero Backend API & Environmental Forensics Engine
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vesperaero_api
+    restart: unless-stopped
+    ports:
+      - '5000:5000'
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - FIRMS_MAP_KEY=${FIRMS_MAP_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - vesperaero_data:/app/data
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:5000/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - vesperaero_net
+
+  # Optional Native PostgreSQL Database (Railway / Local)
+  postgres:
+    image: postgres:16-alpine
+    container_name: vesperaero_postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vesperaero_secure_2026}
+      POSTGRES_DB: vesperaero
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vesperaero_net
+
+volumes:
+  vesperaero_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  vesperaero_net:
+    driver: bridge

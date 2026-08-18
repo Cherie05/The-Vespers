@@ -5,6 +5,7 @@ import IncidentFeed from './components/IncidentFeed';
 import IncidentModal from './components/IncidentModal';
 import DispatchModal from './components/DispatchModal';
 import AnalyticsPanel from './components/AnalyticsPanel';
+import ComplianceDossierModal from './components/ComplianceDossierModal';
 import { BRICS_REGIONS } from './components/RegionSelector';
 import { dashboardTranslations } from './i18n/dashboardTranslations';
 
@@ -20,7 +21,10 @@ export default function App() {
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [modalIncident, setModalIncident] = useState(null);
   const [dispatchIncident, setDispatchIncident] = useState(null);
+  const [dossierIncident, setDossierIncident] = useState(null);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+  const [forecastOffsetHours, setForecastOffsetHours] = useState(0);
+  const [forecastData, setForecastData] = useState([]);
   const [layers, setLayers] = useState({
     pins: true,
     plume: true,
@@ -69,6 +73,19 @@ export default function App() {
     }
   }, []);
 
+  // Fetch 24-hour predictive wind forecast for region
+  const fetchForecast = useCallback(async (region = currentRegion) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/weather/forecast?lat=${region.lat}&lng=${region.lng}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) setForecastData(json.data);
+      }
+    } catch (e) {
+      console.warn('Forecast fetch error:', e);
+    }
+  }, [currentRegion]);
+
   // Fetch FIRMS satellite hotspots for active region
   const fetchHotspots = useCallback(async (region = currentRegion) => {
     try {
@@ -88,7 +105,8 @@ export default function App() {
 
   useEffect(() => {
     fetchHotspots(currentRegion);
-  }, [currentRegion, fetchHotspots]);
+    fetchForecast(currentRegion);
+  }, [currentRegion, fetchHotspots, fetchForecast]);
 
   useEffect(() => {
     fetchReports();
@@ -137,11 +155,23 @@ export default function App() {
   const handleSelectRegion = (region) => {
     setCurrentRegion(region);
     setSelectedIncident(null);
+    setForecastOffsetHours(0);
     fetchHotspots(region);
+    fetchForecast(region);
   };
 
   // Action feedback toast state
   const [actionToast, setActionToast] = useState(null);
+
+  // Handle Citizen Health Advisory Broadcast
+  const handleBroadcastAdvisory = (report) => {
+    setActionToast({
+      type: 'advisory',
+      title: '📢 Public Health Advisory Broadcasted',
+      message: `Emergency SMS & PWA alert transmitted to downwind residents for ${report.title} (${report.region})`
+    });
+    setTimeout(() => setActionToast(null), 5500);
+  };
 
   // Handle Quick Dispatch directly from feed or map
   const handleQuickDispatch = async (report) => {
@@ -212,8 +242,10 @@ export default function App() {
           transform: 'translateX(-50%)',
           zIndex: 9999,
           background: 'rgba(10, 15, 26, 0.96)',
-          border: '1px solid #10b981',
-          boxShadow: '0 12px 36px rgba(0,0,0,0.8), 0 0 20px rgba(16, 185, 129, 0.3)',
+          border: actionToast.type === 'advisory' ? '1px solid #f59e0b' : '1px solid #10b981',
+          boxShadow: actionToast.type === 'advisory'
+            ? '0 12px 36px rgba(0,0,0,0.8), 0 0 20px rgba(245, 158, 11, 0.35)'
+            : '0 12px 36px rgba(0,0,0,0.8), 0 0 20px rgba(16, 185, 129, 0.3)',
           borderRadius: 10,
           padding: '10px 18px',
           display: 'flex',
@@ -223,9 +255,17 @@ export default function App() {
           backdropFilter: 'blur(16px)',
           animation: 'fadeIn 0.25s ease-out'
         }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }}></div>
+          <div style={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: actionToast.type === 'advisory' ? '#f59e0b' : '#10b981',
+            boxShadow: actionToast.type === 'advisory' ? '0 0 10px #f59e0b' : '0 0 10px #10b981'
+          }}></div>
           <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#34d399' }}>{actionToast.title}</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: actionToast.type === 'advisory' ? '#fcd34d' : '#34d399' }}>
+              {actionToast.title}
+            </div>
             <div style={{ fontSize: '0.72rem', color: '#cbd5e1', marginTop: 2 }}>{actionToast.message}</div>
           </div>
           <button
@@ -249,7 +289,7 @@ export default function App() {
       />
 
       <main className="dash-body">
-        {/* Interactive Geospatial Map */}
+        {/* Interactive Geospatial Map with 24h Predictive Plume Slider */}
         <MapView
           reports={reports}
           hotspots={hotspots}
@@ -257,9 +297,14 @@ export default function App() {
           onSelectIncident={(inc) => setSelectedIncident(inc)}
           onOpenModal={(inc) => setModalIncident(inc)}
           onQuickDispatch={handleQuickDispatch}
+          onOpenDossier={(inc) => setDossierIncident(inc)}
+          onBroadcastAdvisory={handleBroadcastAdvisory}
           currentRegion={currentRegion}
           layers={layers}
           setLayers={setLayers}
+          forecastOffsetHours={forecastOffsetHours}
+          setForecastOffsetHours={setForecastOffsetHours}
+          forecastData={forecastData}
           t={t}
         />
 
@@ -293,7 +338,21 @@ export default function App() {
             setModalIncident(null);
             setDispatchIncident(inc);
           }}
+          onOpenDossier={(inc) => {
+            setModalIncident(null);
+            setDossierIncident(inc);
+          }}
+          onBroadcastAdvisory={handleBroadcastAdvisory}
           t={t}
+        />
+      )}
+
+      {/* Official Environmental Compliance Dossier Print Modal */}
+      {dossierIncident && (
+        <ComplianceDossierModal
+          report={dossierIncident}
+          isOpen={!!dossierIncident}
+          onClose={() => setDossierIncident(null)}
         />
       )}
 

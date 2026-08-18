@@ -27,6 +27,11 @@ class DataStore {
           this.auditLogs = [];
         }
         console.log(`[DataStore] Loaded ${this.reports.length} reports and ${this.auditLogs.length} audit logs from storage.`);
+      } else {
+        this.reports = [];
+        this.auditLogs = [];
+      }
+
       // If store is empty, seed from demo-seed.json for instant hackathon demo readiness
       if (this.reports.length === 0) {
         const seedPath = path.join(__dirname, '../../data/demo-seed.json');

@@ -10,6 +10,7 @@
     "build:capture": "cd apps/capture-client && npm run build",
     "build:dashboard": "cd apps/gov-dashboard && npm run build",
     "build": "npm run build:capture && npm run build:dashboard",
+    "test": "npm --prefix server test",
     "install:all": "npm install && cd server && npm install && cd ../apps/capture-client && npm install && cd ../gov-dashboard && npm install"
   },
   "devDependencies": {

@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Eye, Wind, Satellite, Flame, Layers } from 'lucide-react';
+import { Eye, Wind, Satellite, Flame, Layers, FileText, Radio, Activity } from 'lucide-react';
 import PlumeLayer from './PlumeLayer';
 import FIRMSLayer from './FIRMSLayer';
 import HeatmapLayer from './HeatmapLayer';
+import PredictivePlumeSlider from './PredictivePlumeSlider';
 
 // Custom DivIcons for incident pins
 const createIncidentIcon = (isHazard, isDispatched) => {
@@ -43,9 +44,14 @@ export default function MapView({
   onSelectIncident,
   onOpenModal,
   onQuickDispatch,
+  onOpenDossier,
+  onBroadcastAdvisory,
   currentRegion,
   layers,
   setLayers,
+  forecastOffsetHours = 0,
+  setForecastOffsetHours,
+  forecastData = [],
   t
 }) {
   const mapCenter = selectedIncident
@@ -88,6 +94,16 @@ export default function MapView({
           <span>{t.heatmapLayer}</span>
         </button>
       </div>
+
+      {/* 24-Hour Predictive Plume Timeline Slider */}
+      {layers.plume && setForecastOffsetHours && (
+        <PredictivePlumeSlider
+          forecastOffsetHours={forecastOffsetHours}
+          setForecastOffsetHours={setForecastOffsetHours}
+          forecastData={forecastData}
+          currentRegion={currentRegion}
+        />
+      )}
 
       {/* NASA Satellite Overlay Status HUD */}
       {layers.firms && hotspots.length > 0 && (
@@ -134,8 +150,14 @@ export default function MapView({
         {/* Multi-report Clustering Heatmap */}
         <HeatmapLayer reports={reports} visible={layers.heatmap} />
 
-        {/* Gaussian Plume Dispersion Fan Layer */}
-        <PlumeLayer reports={reports} selectedIncident={selectedIncident} visible={layers.plume} />
+        {/* Gaussian Plume Dispersion Fan Layer with Predictive Forecast */}
+        <PlumeLayer
+          reports={reports}
+          selectedIncident={selectedIncident}
+          visible={layers.plume}
+          forecastOffsetHours={forecastOffsetHours}
+          forecastData={forecastData}
+        />
 
         {/* NASA FIRMS Satellite Thermal Anomaly Overlay */}
         <FIRMSLayer hotspots={hotspots} visible={layers.firms} />
@@ -163,7 +185,7 @@ export default function MapView({
                 </Tooltip>
 
                 <Popup>
-                  <div style={{ minWidth: 230, padding: 4 }}>
+                  <div style={{ minWidth: 240, padding: 4 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                       <span style={{ fontSize: '10px', color: '#94a3b8' }}>{report.region}</span>
                       <span style={{
@@ -193,7 +215,7 @@ export default function MapView({
                       <div><strong>Plume Vector:</strong> {report.weather?.windSpeed || 15} km/h @ {report.weather?.windDirection || 270}°</div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
                       <button
                         onClick={() => onQuickDispatch && onQuickDispatch(report)}
                         disabled={isDispatched}
@@ -209,7 +231,7 @@ export default function MapView({
                           textAlign: 'center'
                         }}
                       >
-                        {isDispatched ? '✓ Dispatched' : '⚡ Dispatch Alert'}
+                        {isDispatched ? '✓ Dispatched' : '⚡ Dispatch'}
                       </button>
 
                       <button
@@ -227,6 +249,42 @@ export default function MapView({
                         }}
                       >
                         🔍 Forensics
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                      <button
+                        onClick={() => onBroadcastAdvisory && onBroadcastAdvisory(report)}
+                        style={{
+                          background: 'rgba(245, 158, 11, 0.15)',
+                          border: '1px solid rgba(245, 158, 11, 0.35)',
+                          color: '#fcd34d',
+                          padding: '4px 6px',
+                          borderRadius: 4,
+                          fontSize: '9px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          textAlign: 'center'
+                        }}
+                      >
+                        📢 Advisory
+                      </button>
+
+                      <button
+                        onClick={() => onOpenDossier && onOpenDossier(report)}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(255, 255, 255, 0.18)',
+                          color: '#e2e8f0',
+                          padding: '4px 6px',
+                          borderRadius: 4,
+                          fontSize: '9px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          textAlign: 'center'
+                        }}
+                      >
+                        📄 Dossier
                       </button>
                     </div>
                   </div>

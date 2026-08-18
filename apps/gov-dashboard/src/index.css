@@ -718,3 +718,46 @@ body {
     gap: 12px;
   }
 }
+
+/* ─── Print Styles for Official Compliance Dossier ─── */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .dash-header,
+  .dash-sidebar,
+  .map-container-wrap,
+  .analytics-panel,
+  .no-print,
+  .map-floating-controls,
+  .modal-backdrop::before {
+    display: none !important;
+  }
+
+  .modal-backdrop {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  .print-dossier-window {
+    box-shadow: none !important;
+    border: none !important;
+    background: #fff !important;
+    color: #000 !important;
+    max-width: 100% !important;
+    max-height: none !important;
+  }
+
+  .dossier-printable-content {
+    color: #000 !important;
+  }
+
+  .dossier-printable-content * {
+    color: #000 !important;
+    border-color: #cbd5e1 !important;
+    background: transparent !important;
+  }
+}

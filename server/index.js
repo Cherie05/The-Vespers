@@ -96,11 +96,15 @@ app.get('/', (req, res) => {
 });
 
 const PORT = config.port;
-app.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 VesperAero Backend API running on port ${PORT}`);
-  console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`🍃 Google Gemini AI Integration: ${config.geminiApiKey ? 'API KEY ACTIVE' : 'CALIBRATED SIMULATION ACTIVE'}`);
-  console.log(`🛰️  NASA FIRMS & Open-Meteo Services: ACTIVE`);
-  console.log(`=======================================================`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 VesperAero Backend API running on port ${PORT}`);
+    console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`🍃 Google Gemini AI Integration: ${config.geminiApiKey ? 'API KEY ACTIVE' : 'CALIBRATED SIMULATION ACTIVE'}`);
+    console.log(`🛰️  NASA FIRMS & Open-Meteo Services: ACTIVE`);
+    console.log(`=======================================================`);
+  });
+}
+
+module.exports = app;
