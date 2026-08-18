@@ -27,11 +27,22 @@ class DataStore {
           this.auditLogs = [];
         }
         console.log(`[DataStore] Loaded ${this.reports.length} reports and ${this.auditLogs.length} audit logs from storage.`);
-      } else {
-        this.reports = [];
-        this.auditLogs = [];
-        this.saveToDisk();
-        console.log('[DataStore] Initialized clean empty reports and audit store.');
+      // If store is empty, seed from demo-seed.json for instant hackathon demo readiness
+      if (this.reports.length === 0) {
+        const seedPath = path.join(__dirname, '../../data/demo-seed.json');
+        if (fs.existsSync(seedPath)) {
+          try {
+            const seedRaw = fs.readFileSync(seedPath, 'utf8');
+            const seedData = JSON.parse(seedRaw);
+            if (Array.isArray(seedData) && seedData.length > 0) {
+              this.reports = seedData;
+              this.saveToDisk();
+              console.log(`[DataStore] Auto-seeded ${this.reports.length} baseline incidents across all 5 BRICS regions.`);
+            }
+          } catch (seedErr) {
+            console.warn('[DataStore] Could not read demo-seed.json:', seedErr.message);
+          }
+        }
       }
     } catch (e) {
       console.warn(`[DataStore] Warning loading reports/audit-store: ${e.message}`);

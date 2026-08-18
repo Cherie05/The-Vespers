@@ -1,1 +1,162 @@
-[]
+[
+  {
+    "id": "rep_seed_punjab_01",
+    "title": "Agricultural Biomass / Stubble Burning Detected",
+    "description": "Dense seasonal post-harvest paddy residue combustion along the trans-boundary agricultural corridor.",
+    "lat": 31.634,
+    "lng": 74.872,
+    "region": "Punjab Border Corridor",
+    "country": "India",
+    "imageUrl": "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80",
+    "timestamp": "2026-08-18T10:15:00.000Z",
+    "status": "verified",
+    "weather": {
+      "windSpeed": 16.4,
+      "windDirection": 290,
+      "temperature": 31.8,
+      "humidity": 46
+    },
+    "aiResult": {
+      "source_classification": "Agricultural Biomass Burning",
+      "visual_density_score": 8.4,
+      "immediate_health_hazard": true,
+      "pollutants_detected": ["PM2.5", "PM10", "Black Carbon", "Carbon Monoxide (CO)", "VOCs"],
+      "plume_vector": {
+        "drift_bearing": 110,
+        "estimated_length_km": 14.2,
+        "cross_border_risk": true
+      },
+      "enforcement_recommendation": "High particulate hazard crossing international border. Transmit immediate alert to Punjab State Pollution Control Board and Federal Environmental Bureau."
+    },
+    "reporter": "Citizen Mobile Sensor",
+    "deviceId": "dev_seed_punjab"
+  },
+  {
+    "id": "rep_seed_mpumalanga_02",
+    "title": "Coal Smelter & Thermal Energy Stack Flaring",
+    "description": "Heavy industrial sulfur dioxide emissions from smelter complex drifting towards Mozambique border.",
+    "lat": -25.872,
+    "lng": 29.233,
+    "region": "Mpumalanga Highveld Corridor (ZA/MZ)",
+    "country": "South Africa",
+    "imageUrl": "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=600&q=80",
+    "timestamp": "2026-08-18T09:40:00.000Z",
+    "status": "dispatched",
+    "weather": {
+      "windSpeed": 21.2,
+      "windDirection": 260,
+      "temperature": 24.5,
+      "humidity": 52
+    },
+    "aiResult": {
+      "source_classification": "Coal Smelter Emission",
+      "visual_density_score": 7.8,
+      "immediate_health_hazard": true,
+      "pollutants_detected": ["Sulfur Dioxide (SO2)", "NOx", "PM2.5", "Heavy Metals"],
+      "plume_vector": {
+        "drift_bearing": 80,
+        "estimated_length_km": 18.5,
+        "cross_border_risk": true
+      },
+      "enforcement_recommendation": "Issue CEMS validation order to thermal smelter. Dispatch inspectorate units for stack scrubber compliance verification."
+    },
+    "reporter": "Highveld Community Air Monitor",
+    "deviceId": "dev_seed_mpumalanga"
+  },
+  {
+    "id": "rep_seed_amazon_03",
+    "title": "Amazon Agro-Frontier Biomass Clearing",
+    "description": "Uncontrolled land-clearing burn event producing massive low-altitude smoke layer over Acre-Pando border.",
+    "lat": -9.975,
+    "lng": -67.824,
+    "region": "Amazon Agro-Frontier (BR/BO)",
+    "country": "Brazil",
+    "imageUrl": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80",
+    "timestamp": "2026-08-18T08:20:00.000Z",
+    "status": "verified",
+    "weather": {
+      "windSpeed": 11.5,
+      "windDirection": 340,
+      "temperature": 33.2,
+      "humidity": 68
+    },
+    "aiResult": {
+      "source_classification": "Forest Biomass Clearing",
+      "visual_density_score": 8.9,
+      "immediate_health_hazard": true,
+      "pollutants_detected": ["PM2.5", "Black Carbon", "Ozone Precursors", "Carbon Monoxide"],
+      "plume_vector": {
+        "drift_bearing": 160,
+        "estimated_length_km": 22.0,
+        "cross_border_risk": true
+      },
+      "enforcement_recommendation": "Cross-reference with satellite thermal hotspots. Dispatch IBAMA Prevfogo rapid intervention firefighting brigades."
+    },
+    "reporter": "Indigenous Territorial Observer",
+    "deviceId": "dev_seed_amazon"
+  },
+  {
+    "id": "rep_seed_delhi_04",
+    "title": "Industrial Brick Kiln Cluster Inversion Smog",
+    "description": "Clustered FCBTK brick kiln emissions trapped under nocturnal atmospheric inversion layer.",
+    "lat": 28.669,
+    "lng": 77.453,
+    "region": "Delhi NCR Industrial Cluster (IN)",
+    "country": "India",
+    "imageUrl": "https://images.unsplash.com/photo-1584267385494-9fdd9a71ad75?auto=format&fit=crop&w=600&q=80",
+    "timestamp": "2026-08-18T07:15:00.000Z",
+    "status": "verified",
+    "weather": {
+      "windSpeed": 8.0,
+      "windDirection": 315,
+      "temperature": 28.0,
+      "humidity": 62
+    },
+    "aiResult": {
+      "source_classification": "Brick Kiln Stack Combustion",
+      "visual_density_score": 7.2,
+      "immediate_health_hazard": false,
+      "pollutants_detected": ["PM2.5", "PM10", "Sulfur Dioxide (SO2)", "Fly Ash"],
+      "plume_vector": {
+        "drift_bearing": 135,
+        "estimated_length_km": 9.5,
+        "cross_border_risk": false
+      },
+      "enforcement_recommendation": "Verify Zig-Zag conversion compliance under Commission for Air Quality Management (CAQM) directives."
+    },
+    "reporter": "NCR Citizen Air Watcher",
+    "deviceId": "dev_seed_delhi"
+  },
+  {
+    "id": "rep_seed_yangtze_05",
+    "title": "Petrochemical Refinery Flare & Port Bunker Smog",
+    "description": "Elevated flare emissions from maritime petrochemical terminal with dense volatile organic compounds.",
+    "lat": 31.230,
+    "lng": 121.473,
+    "region": "Yangtze Maritime Corridor (CN)",
+    "country": "China",
+    "imageUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80",
+    "timestamp": "2026-08-18T06:30:00.000Z",
+    "status": "dispatched",
+    "weather": {
+      "windSpeed": 18.5,
+      "windDirection": 70,
+      "temperature": 29.4,
+      "humidity": 75
+    },
+    "aiResult": {
+      "source_classification": "Petrochemical Terminal Flare",
+      "visual_density_score": 7.6,
+      "immediate_health_hazard": true,
+      "pollutants_detected": ["VOCs", "Benzene", "NOx", "Sulfur Dioxide (SO2)"],
+      "plume_vector": {
+        "drift_bearing": 250,
+        "estimated_length_km": 12.8,
+        "cross_border_risk": false
+      },
+      "enforcement_recommendation": "Deploy mobile optical gas imaging (OGI) drone units. Issue automated flaring quota compliance notice."
+    },
+    "reporter": "Yangtze Maritime Environmental Patrol",
+    "deviceId": "dev_seed_yangtze"
+  }
+]
