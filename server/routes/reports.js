@@ -91,7 +91,8 @@ router.post('/pollution', async (req, res) => {
       region = 'Punjab Border Corridor',
       country = 'India',
       reporter = 'Citizen Sensor',
-      deviceId
+      deviceId,
+      source_platform
     } = req.body;
 
     if (!image) {
@@ -124,8 +125,9 @@ router.post('/pollution', async (req, res) => {
       weather,
       aiResult,
       voiceNote: voiceNote || undefined,
-      reporter: reporter || 'Citizen Mobile Sensor',
+      reporter: reporter || (source_platform === 'flutter_android' ? 'Citizen Android App' : 'Citizen Mobile Sensor'),
       deviceId: deviceId || undefined,
+      source_platform: source_platform || 'pwa_web',
       status: aiResult.immediate_health_hazard ? 'verified' : 'pending'
     };
 

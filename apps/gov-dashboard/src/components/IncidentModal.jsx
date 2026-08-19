@@ -187,7 +187,7 @@ export default function IncidentModal({
         {/* Footer Actions */}
         <div style={{ padding: '14px 22px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(9, 13, 22, 0.8)', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-            Source: {incident.reporter || 'Citizen Sensor'} · Engine: {ai.ai_model || 'Google Gemini Vision'}
+            Origin: <strong style={{ color: incident.source_platform?.startsWith('flutter') ? '#38bdf8' : '#cbd5e1' }}>{incident.source_platform?.startsWith('flutter') ? '📱 Native Mobile App (Flutter)' : '🌐 Citizen Web PWA'}</strong> · Engine: {ai.ai_model || 'Google Gemini Vision'}
           </span>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

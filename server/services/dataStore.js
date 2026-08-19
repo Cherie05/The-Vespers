@@ -109,6 +109,7 @@ class DataStore {
       timestamp: new Date().toISOString(),
       status: 'verified',
       upvotes: 1,
+      source_platform: reportData.source_platform || 'pwa_web',
       ...reportData
     };
 

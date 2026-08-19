@@ -30,13 +30,21 @@ describe('VesperAero DataStore & Cryptographic Audit Engine', () => {
 
   let createdReportId;
 
-  test('1. Creates a verified incident report with unique ID and timestamp', () => {
+  test('1. Creates a verified incident report with unique ID, timestamp, and source_platform', () => {
     const report = dataStore.createReport(mockReportPayload);
     expect(report).toBeDefined();
     expect(report.id).toMatch(/^rep_/);
     expect(report.status).toBe('verified');
     expect(report.title).toBe(mockReportPayload.title);
     expect(report.deviceId).toBe('dev_test_jest_uuid_001');
+    expect(report.source_platform).toBe('pwa_web');
+
+    const mobileReport = dataStore.createReport({
+      ...mockReportPayload,
+      source_platform: 'flutter_android'
+    });
+    expect(mobileReport.source_platform).toBe('flutter_android');
+
     createdReportId = report.id;
   });
 

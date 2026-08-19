@@ -144,6 +144,23 @@ export default function IncidentFeed({
                     <CheckCircle2 size={10} /> Dispatched
                   </span>
                 )}
+                <span
+                  style={{
+                    fontSize: '0.62rem',
+                    fontWeight: 600,
+                    padding: '2px 6px',
+                    background: report.source_platform?.startsWith('flutter') ? 'rgba(56, 189, 248, 0.15)' : 'rgba(148, 163, 184, 0.12)',
+                    color: report.source_platform?.startsWith('flutter') ? '#38bdf8' : '#94a3b8',
+                    border: `1px solid ${report.source_platform?.startsWith('flutter') ? 'rgba(56, 189, 248, 0.3)' : 'rgba(148, 163, 184, 0.2)'}`,
+                    borderRadius: 4,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 3
+                  }}
+                  title={report.source_platform?.startsWith('flutter') ? 'Submitted via Native Flutter Android/iOS App' : 'Submitted via Citizen Web PWA'}
+                >
+                  {report.source_platform?.startsWith('flutter') ? '📱 App' : '🌐 Web'}
+                </span>
               </div>
 
               {/* Density Bar */}

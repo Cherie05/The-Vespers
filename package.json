@@ -11,6 +11,8 @@
     "build:dashboard": "cd apps/gov-dashboard && npm run build",
     "build": "npm run build:capture && npm run build:dashboard",
     "test": "npm --prefix server test",
+    "test:mobile": "cd apps/mobile_app && flutter test",
+    "analyze:mobile": "cd apps/mobile_app && flutter analyze",
     "install:all": "npm install && cd server && npm install && cd ../apps/capture-client && npm install && cd ../gov-dashboard && npm install"
   },
   "devDependencies": {

@@ -182,7 +182,7 @@ export default function ComplianceDossierModal({ report, isOpen, onClose }) {
                 {isHazard ? '⚠️ CRITICAL HEALTH HAZARD' : 'STANDARD OBSERVATION'}
               </div>
               <div className="mono" style={{ fontSize: '0.65rem', color: '#64748b' }}>
-                Tracking ID: {report.id}
+                Tracking ID: {report.id} · Origin: {report.source_platform?.startsWith('flutter') ? '📱 Native Flutter App' : '🌐 Citizen Web PWA'}
               </div>
             </div>
           </div>
