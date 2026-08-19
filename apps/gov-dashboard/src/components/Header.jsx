@@ -24,8 +24,8 @@ export default function Header({
     <header className="dash-header">
       {/* Left: Brand Section with stable width */}
       <div className="brand-section">
-        <div className="brand-badge">
-          <Activity size={18} color="#fff" />
+        <div className="brand-badge" style={{ background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img src="/favicon.svg" alt="VesperAero Logo" style={{ width: 28, height: 28, filter: 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.6))' }} />
         </div>
         <div className="brand-text-wrap">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

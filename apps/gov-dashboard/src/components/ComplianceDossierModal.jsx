@@ -138,27 +138,30 @@ export default function ComplianceDossierModal({ report, isOpen, onClose }) {
               justifyContent: 'space-between'
             }}
           >
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                <ShieldCheck size={16} color="#38bdf8" />
-                <span
-                  style={{
-                    fontSize: '0.68rem',
-                    fontWeight: 800,
-                    textTransform: 'uppercase',
-                    letterSpacing: 1.2,
-                    color: '#38bdf8'
-                  }}
-                >
-                  BRICS INTER-AGENCY ENVIRONMENTAL COMPLIANCE RECORD
-                </span>
-              </div>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>{report.title}</h2>
-              <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: 4 }}>
-                Region: <strong style={{ color: '#e2e8f0' }}>{report.region}</strong> ({report.country}) · Coordinates:{' '}
-                <span className="mono" style={{ color: '#38bdf8' }}>
-                  {report.lat}, {report.lng}
-                </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <img src="/favicon.svg" alt="VesperAero Seal" style={{ width: 44, height: 44, filter: 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.5))' }} />
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <ShieldCheck size={16} color="#38bdf8" />
+                  <span
+                    style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      letterSpacing: 1.2,
+                      color: '#38bdf8'
+                    }}
+                  >
+                    BRICS INTER-AGENCY ENVIRONMENTAL COMPLIANCE RECORD
+                  </span>
+                </div>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>{report.title}</h2>
+                <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: 4 }}>
+                  Region: <strong style={{ color: '#e2e8f0' }}>{report.region}</strong> ({report.country}) · Coordinates:{' '}
+                  <span className="mono" style={{ color: '#38bdf8' }}>
+                    {report.lat}, {report.lng}
+                  </span>
+                </div>
               </div>
             </div>
 

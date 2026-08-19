@@ -107,8 +107,8 @@ export default function App() {
     <>
       <header className="app-header">
         <div className="logo-group">
-          <div className="logo-icon">
-            <Leaf size={22} />
+          <div className="logo-icon" style={{ background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/favicon.svg" alt="VesperAero Logo" style={{ width: 30, height: 30, filter: 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.5))' }} />
           </div>
           <div className="logo-text">
             <h1>{t.title}</h1>
