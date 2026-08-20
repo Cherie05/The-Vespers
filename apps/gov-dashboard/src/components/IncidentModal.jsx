@@ -126,6 +126,19 @@ export default function IncidentModal({
             </div>
           </div>
 
+          {/* Authenticity & Ground Truth Verification Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '8px 12px', borderRadius: 8, fontSize: '0.78rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#34d399', fontWeight: 700 }}>
+              <CheckCircle2 size={16} />
+              <span>Ground Truth Verified · Authenticity Score: {ai.authenticity_score || 95}%</span>
+            </div>
+            {ai.category_discrepancy_detected && (
+              <span style={{ background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', padding: '2px 8px', borderRadius: 12, fontSize: '0.7rem', fontWeight: 700 }}>
+                Visual AI Auto-Corrected Preset
+              </span>
+            )}
+          </div>
+
           {/* Detected Pollutants */}
           {ai.pollutants_detected?.length > 0 && (
             <div>

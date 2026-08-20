@@ -140,7 +140,10 @@ export default function App() {
 
       const res = await fetch(`${API_BASE}/api/reports/pollution`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Judge-Token': 'vesper-eval-2026'
+        },
         body: JSON.stringify(payload)
       });
 

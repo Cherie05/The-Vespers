@@ -120,19 +120,25 @@ class _HistoryDrawerState extends State<HistoryDrawer> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.fingerprint, size: 16, color: AppTheme.cyan),
-                    const SizedBox(width: 8),
-                    Text(
-                      'UUID: $_uuid',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 11,
-                        color: AppTheme.textDim,
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.fingerprint, size: 16, color: AppTheme.cyan),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'UUID: $_uuid',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 11,
+                            color: AppTheme.textDim,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 GestureDetector(
                   onTap: _copyUUID,
                   child: const Icon(Icons.copy, size: 14, color: AppTheme.textMuted),

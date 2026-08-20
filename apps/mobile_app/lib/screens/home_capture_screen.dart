@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,6 +24,7 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
   String? _selectedImageBase64;
   String _selectedCategory = 'stubble'; // Observation category (does NOT change GPS)
   final TextEditingController _noteController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   double _lat = 31.6340;
   double _lng = 74.8723;
@@ -36,6 +38,7 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
   Map<String, dynamic>? _analysisResult;
   int _historyCount = 0;
 
+  Uint8List? _previewImageBytes;
   static const String _mockPresetImage =
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
@@ -56,6 +59,7 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
   void dispose() {
     _weatherTimer?.cancel();
     _noteController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -168,13 +172,14 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
       final picker = ImagePicker();
       final picked = await picker.pickImage(
         source: source,
-        maxWidth: 1200,
-        maxHeight: 1200,
-        imageQuality: 80,
+        maxWidth: 900,
+        maxHeight: 900,
+        imageQuality: 70,
       );
       if (picked != null) {
         final bytes = await picked.readAsBytes();
         setState(() {
+          _previewImageBytes = bytes;
           _selectedImageBase64 = 'data:image/jpeg;base64,${base64Encode(bytes)}';
         });
       }
@@ -212,6 +217,7 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
         imageBase64: _selectedImageBase64!,
         lat: _lat,
         lng: _lng,
+        category: _selectedCategory,
         note: _noteController.text.trim(),
         region: _isLiveGPS ? 'Physical GPS Sensor Region' : 'Punjab Border Corridor',
         country: 'India',
@@ -223,6 +229,15 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
           _isAnalyzing = false;
         });
         _updateHistoryCount();
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted && _scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeOutCubic,
+            );
+          }
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -373,6 +388,7 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
           ],
         ),
         body: SingleChildScrollView(
+          controller: _scrollController,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -557,67 +573,121 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
 
               // Optical Evidence Box
               Container(
-                height: 190,
+                height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: AppTheme.bgCard,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: AppTheme.borderAccent,
-                    width: 1.2,
+                    color: _previewImageBytes != null ? AppTheme.cyan : AppTheme.borderAccent,
+                    width: 1.5,
                   ),
+                  boxShadow: [
+                    if (_previewImageBytes != null)
+                      BoxShadow(
+                        color: AppTheme.cyan.withValues(alpha: 0.15),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                  ],
                 ),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.camera_alt_outlined,
-                          size: 42,
-                          color: AppTheme.cyan,
+                    if (_previewImageBytes != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12.5),
+                        child: Image.memory(
+                          _previewImageBytes!,
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Category: $_selectedCategory',
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppTheme.textMain,
+                      )
+                    else
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.camera_alt_outlined,
+                            size: 42,
+                            color: AppTheme.cyan,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Category: $_selectedCategory',
+                            style: GoogleFonts.outfit(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.textMain,
+                            ),
+                          ),
+                          Text(
+                            'Ready for Multimodal Gemini Vision AI',
+                            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textDim),
+                          ),
+                        ],
+                      ),
+                    // Change / Clear Photo Pill when photo is selected
+                    if (_previewImageBytes != null)
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _previewImageBytes = null;
+                              _selectedImageBase64 = null;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.7),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.white24),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.close, size: 12, color: Colors.white70),
+                                const SizedBox(width: 3),
+                                Text(
+                                  'Clear',
+                                  style: GoogleFonts.inter(fontSize: 10, color: Colors.white),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Text(
-                          'Ready for Multimodal Gemini Vision AI',
-                          style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textDim),
-                        ),
-                      ],
-                    ),
+                      ),
                     Positioned(
-                      bottom: 12,
-                      right: 12,
+                      bottom: 10,
+                      right: 10,
                       child: Row(
                         children: [
                           ElevatedButton.icon(
                             onPressed: () => _pickImage(ImageSource.gallery),
-                            icon: const Icon(Icons.photo_library, size: 15),
+                            icon: const Icon(Icons.photo_library, size: 14),
                             label: const Text('Gallery', style: TextStyle(fontSize: 11)),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.bgSurface,
+                              backgroundColor: AppTheme.bgSurface.withValues(alpha: 0.9),
                               foregroundColor: AppTheme.cyan,
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               side: const BorderSide(color: AppTheme.borderSubtle),
+                              elevation: 2,
                             ),
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton.icon(
                             onPressed: () => _pickImage(ImageSource.camera),
-                            icon: const Icon(Icons.camera_alt, size: 15),
+                            icon: const Icon(Icons.camera_alt, size: 14),
                             label: const Text('Camera', style: TextStyle(fontSize: 11)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.cyan,
                               foregroundColor: const Color(0xFF070B14),
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              elevation: 2,
                             ),
                           ),
                         ],
@@ -739,7 +809,9 @@ class _HomeCaptureScreenState extends State<HomeCaptureScreen> {
       onTap: () {
         setState(() {
           _selectedCategory = key;
-          _selectedImageBase64 = _mockPresetImage;
+          if (_previewImageBytes == null) {
+            _selectedImageBase64 = _mockPresetImage;
+          }
         });
       },
       child: Container(
