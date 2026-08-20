@@ -9,7 +9,7 @@ import SubmissionStatus from './components/SubmissionStatus';
 import UserHistoryDrawer from './components/UserHistoryDrawer';
 import { saveReport, getReports, getDeviceUUID } from './lib/historyStorage';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? 'https://web-production-9805d.up.railway.app' : '');
 
 export default function App() {
   const [lang, setLang] = useState('en');

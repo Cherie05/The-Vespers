@@ -9,7 +9,7 @@ import ComplianceDossierModal from './components/ComplianceDossierModal';
 import { BRICS_REGIONS } from './components/RegionSelector';
 import { dashboardTranslations } from './i18n/dashboardTranslations';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? 'https://web-production-9805d.up.railway.app' : '');
 
 export default function App() {
   const [lang, setLang] = useState('en');

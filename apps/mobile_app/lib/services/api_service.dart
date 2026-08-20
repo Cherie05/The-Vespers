@@ -4,14 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'history_service.dart';
 
 class ApiService {
-  // Primary endpoints: localhost (ADB USB reverse) and local LAN IP (WiFi fallback)
+  // Primary endpoints: Live Railway Cloud API, localhost (ADB reverse), and LAN WiFi
   static const List<String> _candidateHosts = [
+    'https://web-production-9805d.up.railway.app',
     'http://localhost:5000',
     'http://192.168.1.35:5000',
     'http://10.0.2.2:5000',
   ];
 
-  static String _activeBaseUrl = 'http://localhost:5000';
+  static String _activeBaseUrl = 'https://web-production-9805d.up.railway.app';
 
   static String get baseUrl => _activeBaseUrl;
 
