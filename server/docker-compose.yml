@@ -1,8 +1,11 @@
 version: '3.8'
 
+# 100% Open-Source Infrastructure Stack for VesperAero Server
+# Includes: Node.js Express API, Redis Cache, PostgreSQL Database, MinIO Object Storage
+
 services:
-  # 1. VesperAero Backend API & Environmental Forensics Engine
-  backend:
+  # 1. VesperAero Backend API & Environmental Forensics Engine (Open-Source Node.js/Express)
+  api:
     build:
       context: .
       dockerfile: Dockerfile
@@ -18,11 +21,11 @@ services:
       - JUDGE_SECRET_TOKEN=${JUDGE_SECRET_TOKEN:-vesper-eval-2026}
       - DAILY_GEMINI_CAP=${DAILY_GEMINI_CAP:-1000}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:5174,http://localhost:3000}
-      # Database Connection
+      # Open-Source PostgreSQL Connection
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-vesperaero_secure_2026}@postgres:5432/${POSTGRES_DB:-vesperaero}
-      # Redis Distributed Caching & Rate Limiting
+      # Open-Source Redis Cache
       - REDIS_URL=redis://redis:6379
-      # S3 / MinIO Object Storage Bucket for Photo Evidence
+      # Open-Source MinIO S3 Object Storage Bucket
       - S3_ENDPOINT=http://minio:9000
       - S3_BUCKET_NAME=vesperaero-evidence
       - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minioadmin}
@@ -45,7 +48,7 @@ services:
     networks:
       - vesperaero_net
 
-  # 2. Redis Distributed Caching, Quota Shield & Distributed Rate Limiting
+  # 2. Redis - 100% Open-Source In-Memory Caching & Rate Limiting Engine
   redis:
     image: redis:7-alpine
     container_name: vesperaero_redis
@@ -63,7 +66,7 @@ services:
     networks:
       - vesperaero_net
 
-  # 3. PostgreSQL Database (ACID Incident Storage & Spatial Indexing)
+  # 3. PostgreSQL - 100% Open-Source Relational Database (ACID Compliance)
   postgres:
     image: postgres:16-alpine
     container_name: vesperaero_postgres
@@ -84,14 +87,14 @@ services:
     networks:
       - vesperaero_net
 
-  # 4. MinIO S3-Compatible Object Storage for Citizen Photos & PDF Compliance Dossiers
+  # 4. MinIO - 100% Open-Source S3-Compatible High-Performance Object Storage
   minio:
     image: minio/minio:latest
     container_name: vesperaero_minio
     restart: unless-stopped
     ports:
       - '9000:9000' # S3 API Gateway
-      - '9001:9001' # MinIO Web Console UI
+      - '9001:9001' # Web Console
     environment:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin_secure_2026}
@@ -106,8 +109,8 @@ services:
     networks:
       - vesperaero_net
 
-  # 5. MinIO Bucket Auto-Provisioner (Creates 'vesperaero-evidence' bucket on startup)
-  createbuckets:
+  # 5. MinIO Auto-Provisioner - Initializes 'vesperaero-evidence' Bucket
+  minio_init:
     image: minio/mc:latest
     container_name: vesperaero_minio_init
     depends_on:
