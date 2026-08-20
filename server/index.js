@@ -33,9 +33,15 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
     
-    // In production, check if origin is in whitelist or allow localhost
+    // In production, check if origin is in whitelist or allow localhost/netlify/railway
     if (config.isProduction) {
-      const isAllowed = config.allowedOrigins.some(allowed => origin === allowed || origin.endsWith('.up.railway.app') || origin.startsWith('http://localhost'));
+      const isAllowed = config.allowedOrigins.some(allowed => 
+        origin === allowed || 
+        origin.endsWith('.up.railway.app') || 
+        origin.endsWith('.netlify.app') || 
+        origin.endsWith('.vercel.app') || 
+        origin.startsWith('http://localhost')
+      );
       if (isAllowed) return callback(null, true);
       return callback(null, true); // Fallback permissive for demo web apps
     }
