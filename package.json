@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "VesperAero — Federated Climate-Action Platform for Hyper-local & Cross-border Pollution Monitoring",
   "scripts": {
+    "start": "npm --prefix server start",
+    "start:server": "npm --prefix server start",
     "dev:server": "cd server && npm run dev",
     "dev:capture": "cd apps/capture-client && npm run dev",
     "dev:dashboard": "cd apps/gov-dashboard && npm run dev",
