@@ -38,6 +38,8 @@ Major BRICS cities monitor macro-level air quality but consistently miss **hyper
 
 ---
 
+
+
 ## 🏗️ System Architecture
 
 ```mermaid
@@ -141,6 +143,21 @@ curl -X POST https://web-production-9805d.up.railway.app/api/reports/pollution \
 ```
 
 ---
+
+
+## Support Continued Development
+
+This project is part of my independent open-source work.
+
+I build and share software because I believe useful technology should be accessible to people who want to learn, experiment, solve problems, and build upon existing ideas.
+
+Maintaining open-source projects requires continued development, testing, documentation, and improvements.
+
+If this project has helped you learn something, solve a problem, or develop your own work, you can support its continued development through GitHub Sponsors.
+
+Sponsorship is entirely voluntary. The software remains freely available regardless of whether you choose to contribute.
+
+**[Support my open-source work on GitHub Sponsors](https://github.com/sponsors/Cherie05)**
 
 ## 📄 License
 
